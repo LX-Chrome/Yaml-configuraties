@@ -3,14 +3,18 @@ all:
   children:
     linux_servers:
       hosts:
-        linux-server-01:
+        server-2:
           ansible_host: 192.168.178.121
+          ansible_user: ansible
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        server-3:
+          ansible_host: 192.168.178.212
           ansible_user: ansible
           ansible_ssh_private_key_file: ~/.ssh/id_rsa
     vyos_routers:
       hosts:
         vyos-router-01:
-          ansible_host: 192.168.75.134
+          ansible_host: 192.168.178.140
           ansible_user: vyos
           ansible_ssh_private_key_file: ~/.ssh/id_rsa
           ansible_network_os: vyos.vyos.vyos
