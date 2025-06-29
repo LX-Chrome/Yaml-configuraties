@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  osticket-db:
+    image: mysql:8.0
+    container_name: osticket-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: osticket
+      MYSQL_USER: osticket
+      MYSQL_PASSWORD: osticketpass
+    volumes:
+      - osticket_db_data:/var/lib/mysql
+    networks:
+      - osticket-network
+
+  osticket:
+    image: campbellsoftwaresolutions/osticket
+    container_name: osticket-app
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      MYSQL_HOST: osticket-db
+      MYSQL_DATABASE: osticket
+      MYSQL_USER: osticket
+      MYSQL_PASSWORD: osticketpass
+      INSTALL_SECRET: supersecretkey
+      INSTALL_CONFIG: |
+        <?php
+        return array(
+            'url' => 'http://localhost:8080/',
+            'admin_email' => 'admin@cloudcompany.com',
+            'helpdesk_name' => 'Cloud Services Support',
+            'helpdesk_title' => 'Cloud Company Support Portal'
+        );
+    depends_on:
+      - osticket-db
+    networks:
+      - osticket-network
+    volumes:
+      - osticket_data:/var/www/html
+
+volumes:
+  osticket_db_data:
+  osticket_data:
+
+networks:
+  osticket-network:
+    driver: bridge

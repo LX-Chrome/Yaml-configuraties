@@ -1,0 +1,33 @@
+---
+- name: Configure VyOS Router for Cloud Customers
+  hosts: vyos_routers
+  gather_facts: no
+  vars:
+    customers:
+      - name: "Stichting BCA"
+        ip: "10.100.201.11"
+        interface: "lo11"
+      - name: "Regenboog BV"
+        ip: "10.100.201.12"
+        interface: "lo12"
+      - name: "Vereniging Golf"
+        ip: "10.100.201.13"
+        interface: "lo13"
+
+  tasks:
+    - name: Configure loopback interfaces for customers
+      vyos.vyos.vyos_config:
+        lines:
+          - set interfaces loopback {{ item.interface }} address {{ item.ip }}/32
+          - set interfaces loopback {{ item.interface }} description 'customer {{ item.name }}'
+        save: yes
+      loop: "{{ customers }}"
+
+    - name: Commit configuration changes
+      vyos.vyos.vyos_config:
+        save: yes
+
+    - name: Display configured interfaces
+      debug:
+        msg: "Configured loopback interface {{ item.interface }} with IP {{ item.ip }}/32 for customer {{ item.name }}"
+      loop: "{{ customers }}"

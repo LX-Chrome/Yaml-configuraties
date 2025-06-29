@@ -1,0 +1,42 @@
+---
+- name: Configure Linux Server for Cloud Customers
+  hosts: linux_servers
+  become: yes
+  vars:
+    customers:
+      - name: "StichtingBCA"
+        password: "ACBgnitthcitS"
+      - name: "RegenboogBV"
+        password: "VBgoobnegeR"
+      - name: "VerenigingGolf"
+        password: "floGginginerev"
+    
+  tasks:
+    - name: Ensure cloud_users group exists
+      group:
+        name: cloud_users
+        state: present
+
+    - name: Create customer user accounts
+      user:
+        name: "{{ item.name }}"
+        password: "{{ item.password | password_hash('sha512') }}"
+        groups: cloud_users
+        shell: /bin/false
+        create_home: yes
+        state: present
+      loop: "{{ customers }}"
+      
+    - name: Verify users cannot access shell
+      lineinfile:
+        path: /etc/passwd
+        regexp: "^{{ item.name }}:"
+        line: "{{ item.name }}:x:{{ ansible_facts['getent_passwd'][item.name][1] }}:{{ ansible_facts['getent_passwd'][item.name][2] }}:{{ item.name }}:/home/{{ item.name }}:/bin/false"
+        state: present
+      loop: "{{ customers }}"
+      when: ansible_facts['getent_passwd'][item.name] is defined
+
+    - name: Display created users
+      debug:
+        msg: "Created user {{ item.name }} with password {{ item.password }} in group cloud_users"
+      loop: "{{ customers }}"

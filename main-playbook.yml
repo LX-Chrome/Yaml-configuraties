@@ -1,0 +1,6 @@
+---
+- name: Deploy Cloud Customer Infrastructure
+  import_playbook: linux-server-config.yml
+
+- name: Configure Router for Cloud Customers  
+  import_playbook: router-config.yml
