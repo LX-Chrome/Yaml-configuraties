@@ -5,11 +5,11 @@ all:
       hosts:
         server-2:
           ansible_host: 192.168.178.121
-          ansible_user: ansible
+          ansible_user: cephalon2a
           ansible_ssh_private_key_file: ~/.ssh/id_rsa
         server-3:
           ansible_host: 192.168.178.212
-          ansible_user: ansible
+          ansible_user: cephalon3a
           ansible_ssh_private_key_file: ~/.ssh/id_rsa
     vyos_routers:
       hosts:
